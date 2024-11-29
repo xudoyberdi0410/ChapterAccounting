@@ -1,0 +1,45 @@
+<!-- index.html -->
+{% extends 'base.html' %} {% block content %}
+<div action="/api/add" method="post" class="add_chapter_form">
+  <select id="title-select" style="flex: 3" name="title"></select>
+  <input id="chapter_number" type="number" name="chapter" placeholder="Глава" class="input" />
+  <select name="position" id="position">
+    <option value="Тайпер">Тайпер</option>
+    <option value="Переводчик">Переводчик</option>
+    <option value="Звуковик">Звуковик</option>
+    <option value="Клинер">Клинер</option>
+  </select>
+  <button class="btn btn-primary" id="add_chapter_btn">Добавить</button>
+</div>
+<table id="chapters_list">
+<tr>
+    <th>Названия тайтла</th>
+    <th>Глава</th>
+    <th>Поцизия</th>
+</tr>
+</table>
+<script>
+  async function get_manga_list() {
+    const response = await axios.get("/api/manga_list");
+    return response.data.manga_list;
+  }
+  const element = document.querySelector("#title-select");
+
+  get_manga_list()
+    .then((manga_list) => {
+      manga_list.forEach((manga) => {
+        const option = document.createElement("option");
+        option.value = manga;
+        option.text = manga;
+        element.appendChild(option);
+      });
+    })
+    .catch((error) => console.error(error));
+
+    axios.get("/api/chapters").then((response) => {
+      const chapters = response.data.chapters;
+      console.log(response.data);
+      
+    });
+</script>
+{% endblock %}

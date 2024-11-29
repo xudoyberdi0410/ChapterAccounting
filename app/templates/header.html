@@ -1,0 +1,28 @@
+<header>
+    <button class="btn btn-secondary">
+        <a href="/logout">Выйти</a>
+    </button>
+    <div class="profile">
+        <span id="username">UserName</span>
+        <img src="{{ url_for('static', filename='images/profile.svg') }}" alt="" width="40px">
+    </div>
+</header>
+<script>
+    function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+    return "";
+    }
+    let username_label = document.querySelector("#username")
+    username_label.textContent = getCookie("username")
+</script>
