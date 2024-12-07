@@ -5,11 +5,11 @@ $(document).ready(function() {
     data.then(function(response){
         let chapters = response.data.data
         
-        chapters.forEach(function(chapter){
+        chapters.forEach(function(chapter){           
             let row = $('<tr>')
-            row.append($('<td>').text(chapter[1]))
-            row.append($('<td>').text(chapter[2]))
-            row.append($('<td>').text(chapter[3]))
+            row.append($('<td>').text(chapter.title_name))
+            row.append($('<td>').text(chapter.chapter))
+            row.append($('<td>').text(chapter.position))
             table.append(row)
         })
     })

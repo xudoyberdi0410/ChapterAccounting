@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, redirect, make_response, jsonify
 from app.discord import Discord
 from app.mangalib import MangaLib
-from app.database import Database
+from app.db import Chapters, session
 import os
 
 app = Flask(__name__)
@@ -13,17 +13,6 @@ app.config['manga_list'] = os.path.join(BASE_DIR, 'static', 'manga_list.json')
 discord = Discord()
 with app.app_context():
     mangalib = MangaLib()
-
-database = Database("database.db")
-database.create_table(
-    "chapters",
-    "id INTEGER PRIMARY KEY, "
-    "title_name TEXT, "
-    "chapter INTEGER, "
-    "position TEXT, "
-    "created_at DATETIME DEFAULT CURRENT_TIMESTAMP"
-)
-
 
 @app.route("/")
 def home_page():
@@ -99,7 +88,11 @@ def add_record():
     if not 'access_token' in request.cookies:
         return redirect("/login")
     data = request.json
-    database.insert_data("chapters", "title_name, chapter, position", (data.get("title"), data.get("number"), data.get("position")))
+
+    chapter = Chapters(data.get("title"), data.get("number"), data.get("position"))
+    session.add(chapter)
+    session.commit()
+    
     return redirect("/")
 
 @app.route("/api/chapters", methods=['GET'])
@@ -115,11 +108,10 @@ def get_records():
 
     offset = (page - 1) * per_page
 
-    query = "SELECT * FROM chapters ORDER BY id DESC LIMIT ? OFFSET ?"
-    chapters = database.fetch_data(query, (per_page, offset))
+    chapters_query = session.query(Chapters).order_by(Chapters.ch_id.desc()).offset(offset).limit(per_page)
+    chapters = [chapter.to_dict() for chapter in chapters_query.all()]
 
-    total_count_query = "SELECT COUNT(*) FROM chapters"
-    total_count = database.fetch_data(total_count_query)[0][0]
+    total_count = session.query(Chapters).count()
 
     response = {
         "page": page,
