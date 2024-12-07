@@ -16,5 +16,9 @@ RUN pip install gunicorn
 # Копирование приложения
 COPY . .
 
+# Инициализации миграции
+RUN alembic upgrade head
+
 # Команда запуска Gunicorn
-ENTRYPOINT ["gunicorn", "-b", "0.0.0.0:8000", "run:app"]
+#ENTRYPOINT ["gunicorn", "-b", "0.0.0.0:8000", "run:app"]
+CMD ["sh", "-c", "alembic upgrade head && gunicorn -b 0.0.0.0:8000 run:app"]
