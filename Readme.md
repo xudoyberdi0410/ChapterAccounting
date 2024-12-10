@@ -6,6 +6,10 @@
 ```bash
 pip install -r requirements.txt
 ```
+## Инициализации миграции
+```
+alembic upgrade head
+```
 ## Запуск в режиме разработки
 ```bash
 python run.py
